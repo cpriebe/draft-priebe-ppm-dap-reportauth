@@ -1,16 +1,25 @@
-# Internet-Draft Template Repository
+# Report authentication and rate limiting for PPM DAP
 
-Use this repository as a template if you want to start working on
-[IETF](https://www.ietf.org/) documents.
+This is the working area for the individual Internet-Draft, "# Report authentication and rate limiting for PPM DAPP".
 
-[Read the
-instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/TEMPLATE.md)
-for more information.
+* [Editor's Copy](https://cpriebe.github.io/draft-priebe-ppm-dap-reportauth/#go.draft-priebe-ppm-dap-reportauth.html)
 
-Once you have created your own repository, start work by:
+## Contributing
 
-1. Set "Workflow permissions" to "Read and write permissions"
-   [in the repository settings](../../settings/actions#actions_default_workflow_permissions_write).
+See the
+[guidelines for contributions](https://github.com/cpriebe/draft-priebe-ppm-dap-reportauth/blob/main/CONTRIBUTING.md).
 
-2. Rename the `draft-todo-yourname-protocol.md` file
-   [here](../../edit/main/draft-todo-yourname-protocol.md).
+Contributions can be made by creating pull requests.
+The GitHub interface supports creating pull requests using the Edit (✏) button.
+
+
+## Command Line Usage
+
+Formatted text and HTML versions of the draft can be built using `make`.
+
+```sh
+$ make
+```
+
+Command line usage requires that you have the necessary software installed.  See
+[the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
