@@ -106,7 +106,7 @@ Issuer which issues tokens. When a Client contributes to a measurement
 task, it adds a token for each Aggregator to the corresponding encrypted
 input share within the report.
 
-Aggregators that opt-in to support this extension fulfil the role of
+Aggregators that opt-in to support this extension fulfill the role of
 Origins as defined in {{!RLT}}.  When an Aggregator receives an input
 share, it validates the token by verifying the token signature using the
 public Token Key from the Issuer. It also verifies that the token nonce
@@ -158,24 +158,29 @@ as part of their aggregation initialization.
 and their interactions.
 
 ~~~
-+--------+    +-----------+     +--------+     +--------+         +--------+
-| Client |    | Attester  |     | Issuer |     | Leader |         | Helper |
-+--------+    +-----------+     +--------+     +--------+         +--------+
-
-[Challenge]--------->
-          <authenticate Client>
-               [Challenge]--------->
-                   <-------------[Token]
-          <enforce rate limit>
-    <-----------[Token]
-
++---------+    +-----------+     +---------+     +--------+       +--------+
+| Client  |    | Attester  |     | Issuer  |     | Leader |       | Helper |
++---------+    +-----------+     +---------+     +--------+       +--------+
+     |               |                |              |                |
+<per Aggregator>
+[Challenge]--------->|                |              |                |
+     |      <authenticate Client>     |              |                |
+     |               |--[Challenge]-->|              |                |
+     |               |<----[Token]----|              |                |
+     |      <enforce rate limit>      |              |                |
+     |<----[Token]---|                |              |                |
+     |               |                |              |                |
+     |               |                |              |                |
 <upon upload>
-[payload + tokens within input
- share ReportAuth extensions]---------------------->
-                                             <validate token>
-                                           [Helper share with
-                                            ReportAuth extension ]---->
-                                                                <validate token>
+     |        [payload + tokens     ] |              |                |
+     |--------[within input share   ]--------------->|                |
+     |        [ReportAuth extensions] |              |                |
+     |               |                |  <validate Leader token>      |
+     |               |                |              |  [Helper    ]  |
+     |               |                |              |--[share with]->|
+     |               |                |              |  [ReportAuth]  |
+     |               |                |              |  [extension ]  |
+     |               |                |              |         <validate token>
 ~~~
 {: #fig-interaction-overview title="Interaction overview"}
 
@@ -224,23 +229,25 @@ struct {
 The ReportAuth extension's field's values are as follows:
 
 ~~~
-+----------------+--------------------+-----------------------------+------+
-| field          | subfield           | Value                       | Note |
-+----------------+--------------------+-----------------------------+------+
-| extension_type |                    | TBD                         | [1]  |
-+----------------+--------------------+-----------------------------+------+
-| Token          | token_type         | 0x0003 (network byte order) | [1]  |
-+----------------+--------------------+-----------------------------+------+
-|                | nonce              | See "Setting the report ID" | [2]  |
-+----------------+--------------------+-----------------------------+------+
-|                | challenge_digest   |                             | [2]  |
-+----------------+--------------------+-----------------------------+------+
-|                | token_key_id       |                             | [2]  |
-+----------------+--------------------+-----------------------------+------+
-|                | authenticator      |                             | [2]  |
-+----------------+--------------------+-----------------------------+------+
-| Challenge      |...                 | See "Token Aquisition"      |      |
-+----------------+--------------------+-----------------------------+------+
++----------------+--------------------+-------------------------+------+
+| field          | subfield           | Value                   | Note |
++----------------+--------------------+-------------------------+------+
+| extension_type |                    | TBD                     | [1]  |
++----------------+--------------------+-------------------------+------+
+| Token          | token_type         | 0x0003 (network byte    |      |
+|                |                    | order)                  | [1]  |
++----------------+--------------------+-------------------------+------+
+|                | nonce              | See "Setting the        |      |
+|                |                    | report ID"              | [2]  |
++----------------+--------------------+-------------------------+------+
+|                | challenge_digest   |                         | [2]  |
++----------------+--------------------+-------------------------+------+
+|                | token_key_id       |                         | [2]  |
++----------------+--------------------+-------------------------+------+
+|                | authenticator      |                         | [2]  |
++----------------+--------------------+-------------------------+------+
+| Challenge      |...                 | See "Token Aquisition"  |      |
++----------------+--------------------+-------------------------+------+
 ~~~
 
 \[1\] See {{!DAP}}
@@ -311,10 +318,12 @@ defined in {{!DAP, Section 4.3.3}}.
 |  +--+----------------------------------------------+--+  |
 |  |  | PlainTextInputShare                          |  |  |
 |  +--+--+----------------------------------------+--+--+  |
-|  |  |  | ReportAuth                             |  |  |  |
-|  |  +--+----------------------------------------+--+--+  |
-|  |  |  | Other Extensions                       |  |  |  |
-|  |  +--+----------------------------------------+--+--+  |
+|  |  |  | Extensions                             |  |  |  |
+|  +--+--+--+----------------------------------+--+--+--+  |
+|  |  |  |  | ReportAuth                       |  |  |  |  |
+|  |  +--+--+----------------------------------+--+--+--+  |
+|  |  |  |  | ...                              |  |  |  |  |
+|  |  +--+--+----------------------------------+--+--+--+  |
 |  |  |  | Payload                                |  |  |  |
 +--+--+--+----------------------------------------+--+--+--+
 ~~~
@@ -348,8 +357,8 @@ and Section 4.4.1.4}} step 6.
 
 Aggregators that opt-in to support this extension and are configured to
 enforce it for a given task, MUST reject reports not containing the
-extension. Equally, If they do not recognize or support the extension,
-the MUST reject reports containing the extension.
+extension. Equally, if they do not recognize or support the extension,
+they MUST reject reports containing the extension.
 
 In case the Aggregator is configured to support it, an additional step
 is added to the Input Share Preparation in {{!DAP, Section 4.4.1.5}}.
@@ -365,7 +374,7 @@ active Issuer Token Key.
 - Validate `token.nonce[16...31] == report.metadata.report_id`. See
   {{setting-report-id}}.
 
-If any of the above step fails, the aggregator MUST reject the report
+If any of the above steps fails, the aggregator MUST reject the report
 share with an "unauthenticatedReport" error. Note that the binding of
 report and token nonce is an optimisation, allowing aggregators to only
 keep track of one set of nonces. Aggregators MAY choose to additionally
