@@ -328,11 +328,11 @@ report, as defined in {{!DAP, Section 4.3.3}}.
 
 ### Constructing the RatedLimitedReport extension
 
-At the time of upload, the client MUST select one token for each of the
-Aggregators.  The Client MUST only use a token once per task. However,
-the client MAY re-use the token for a different task. If the client has
-no unused token left or the client has not obtained tokens for a
-participating Aggregator, it MUST abort the upload.
+At the time of upload, the Client selects tokens for each of the
+Aggregators. The Client MUST NOT reuse a token previously used for the
+same task. However, the client MAY re-use tokens for a different task.
+If the client has no unused token left or the client has not obtained
+tokens for a participating Aggregator, it MUST abort the upload.
 
 The client uses the allocated token, and the token's
 challenge, to construct the RatedLimitedReport extension and include it
