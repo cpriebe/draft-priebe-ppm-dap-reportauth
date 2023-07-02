@@ -393,7 +393,7 @@ client is contributing to.
 
 ## Timing and frequency of token issuance requests {#timing-token-issuance}
 
-As discussed in {token-acquisition} token issuance MUST be independent
+As discussed in {{token-acquisition}} token issuance MUST be independent
 of token redemption. If clients requested tokens only in response to
 receiving instructions to contribute to a measurement task, an Attester
 would be able to infer which task a given client has contributed to
@@ -449,7 +449,7 @@ small number of colluding Clients.
 
 A malicious Client may attempt to hoard tokens across policy windows to
 bypass the rate limit. This is mitigated by the periodic Token Key and
-Issuer Origin Secret rotation discussed in {issuer-key-rotation}.
+Issuer Origin Secret rotation discussed in {{issuer-key-rotation}}.
 
 ### Malicious Attester
 
