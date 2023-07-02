@@ -134,10 +134,13 @@ following error types:
 |                       | input share rate-limted token or no token |
 |                       | was provided                              |
 
-The terms used follow those described in {{!DAP}} and {{!RLT}}. The following new terms are used:
+The terms used follow those described in {{!DAP}} and {{!RLT}}. The
+following new terms are used:
 
 Token:
-: The RSA Blind Signature Token as defined in {{!RLT}} included in upload report shares to prove that the client has been authenticated and rate-limited.
+: The RSA Blind Signature Token as defined in {{!RLT}} included in
+upload report shares to prove that the client has been authenticated and
+rate-limited.
 
 # The RatedLimitedReport extension
 
@@ -495,7 +498,7 @@ However, since the Leader and Attester collude, it is possible for the
 Leader to obtain an arbitrary number of valid Helper tokens to mount
 such an attack.
 
-### There are two mitigations to prevent the Leader from identifying
+There are two mitigations to prevent the Leader from identifying
 upload reports from a specific client:
 
 - Clients communicate with the Leader in a privacy-preserving fashion,
