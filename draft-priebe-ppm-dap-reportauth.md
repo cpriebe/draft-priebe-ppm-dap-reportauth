@@ -19,10 +19,10 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "Report rate limiting for PPM DAP"
+title: "Anonymous report authentication for PPM DAP"
 category: info
 
-docname: draft-priebe-ppm-dap-ratelimited-latest
+docname: draft-priebe-ppm-dap-reportauth-latest
 submissiontype: IETF
 number:
 date:
@@ -40,8 +40,8 @@ venue:
   type: "Working Group"
   mail: "ppm@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/ppm/"
-  github: "cpriebe/draft-priebe-ppm-dap-RatedLimitedReport"
-  latest: "https://cpriebe.github.io/draft-priebe-ppm-dap-RatedLimitedReport/draft-priebe-ppm-dap-RatedLimitedReport.html"
+  github: "cpriebe/draft-priebe-ppm-dap-reportauth"
+  latest: "https://cpriebe.github.io/draft-priebe-ppm-dap-reportauth/draft-priebe-ppm-dap-reportauth.html"
 
 author:
  -
@@ -61,12 +61,12 @@ informative:
 --- abstract
 This document describes an upload extension to the Distributed
 Aggregation Protocol for Privacy Preserving Measurement
-{{!DAP=I-D.draft-ietf-ppm-dap-04}}. The extension contains a
-Rate-Limited Blind RSA token as defined in
-{{!RLT=I-D.draft-ietf-privacypass-rate-limit-tokens-01}}, which allows
+{{!DAP=I-D.draft-ietf-ppm-dap-04}}. The extension contains a Privacy
+Pass token as defined in
+{{!PPARCH=I-D.draft-ietf-privacypass-architecture-13}}, which allows
 Aggregators to verify a DAP report is from a client which has been
-authenticated and rate-limited, without learning the client's identity,
-to protect against Sybil attacks.
+authenticated and optionally rate-limited, without learning the client's
+identity, to protect against Sybil attacks.
 
 
 --- middle
@@ -82,43 +82,56 @@ The anonymous nature of the data upload comes with the risk of Sybil
 Attacks. A malicious party may generate a large number of reports, then
 upload them to the aggregators to skew aggregation results in order to
 reveal information about honest measurements (privacy violation), or to
-influence results to their benefit ("stats poisoning"). Rate limiting
-can be used to throttle such attacks.  However, effective rate limiting
-requires associating an upload with a client identity, and thus defeats
-the purpose of {{!DAP}}.
+influence results to their benefit ("stats poisoning"). Client
+authentication and rate limiting can be used to throttle such attacks.
+However, authentication and effective rate limiting requires associating
+an upload with a client identity, and thus defeats the purpose of
+{{!DAP}}.
 
-Rate-Limited Blind RSA token as defined in {{!RLT}} offer a framework to
-solve this dilemma. In this protocol, a client can go through a token
-issuance process to generate a rate-limited token. By presenting the
-token to a service provider (i.e. the Origin, as defined in {{!RLT}}), a
-client can prove to have been authenticated and rate limited by an
+Private Pass tokens as defined in {{!PPARCH}} offer a framework to solve
+this dilemma. In this protocol, a client can go through a token issuance
+process to generate unlinkable one-time use authentication tokens. By
+presenting the token to a service provider (i.e. the Origin, as defined
+in {{!PPARCH}}), a client can prove to have been authenticated by an
 Attester that the service provider trusts, without revealing its
 identity to the latter.
 
 This document provides the specification for a {{!DAP}} upload report
-extension that leverages Rate-Limited Blind RSA tokens to mitigate the
-Sybil attack risk in {{!DAP}} uploads. For this, Clients request a fixed
+extension that leverages Privacy Pass tokens to mitigate the Sybil
+attack risk in {{!DAP}} uploads. For this, Clients request a fixed
 number of tokens for each Aggregator it sends report shares to within
 each token issuance window. Token issuance follows the process outlined
-in {{!RLT}}. As part of this process, the Client is authenticated and
-rate-limited by the Attester according to the policy defined by the
-Issuer which issues tokens. When a Client contributes to a measurement
-task, it adds a token for each Aggregator to the corresponding encrypted
-input share within the report.
+in {{!PPISSUANCE=I-D.ietf-privacypass-protocol}}. As part of this process,
+the Client is authenticated by the Attester. When a Client contributes
+to a measurement task, it adds a token for each Aggregator to the
+corresponding encrypted input share within the report.
+
+Rate-Limited Privacy Pass tokens
+{{!RATE-LIMITED=I-D.draft-ietf-privacypass-rate-limit-tokens-01}}
+provide further protection against Sybil attacks by introducing an
+issuance protocol in which token requests are rate-limited by the
+Attester according to the policy defined by the Issuer which issues
+tokens as defined in {{!PPARCH}}. While it is RECOMMENDED to use
+rate-limited tokens to prevent authenticated Clients from launching
+Sybil attacks, the DAP extension described in this document is
+compatible with any type of Privacy Pass token. Non-rate-limited tokens
+can be sufficient if authenticated clients are assumed to not launch
+Sybil attacks.
 
 Aggregators that opt-in to support this extension fulfill the role of
-Origins as defined in {{!RLT}}.  When an Aggregator receives an input
+Origins as defined in {{!PPARCH}}. When an Aggregator receives an input
 share, it validates the token by verifying the token signature using the
-public Token Key from the Issuer. It also verifies that the token nonce
-has not been seen for the current task to prevent double spending. Upon
-successful validation which proves to the Aggregator that the client has
-been authenticated and rate limiting has been enforced, the Aggregator
-can process the report share as outlined in {{!DAP}}.
+public Token Key from the Issuer as outlined in
+{{!PPAUTHSCHEME=I-D.ietf-privacypass-auth-scheme}}. It also verifies that
+the token nonce has not been seen for the current task to prevent double
+spending. Upon successful validation which proves to the Aggregator that
+the Client has been authenticated and optionally rate-limited, the
+Aggregator can process the report share as outlined in {{!DAP}}.
 
 This document does not specify the coordination between Aggregators and
-Issuers to configure the Issuer rate-limiting policy and to exchange the
-per-Origin Token Key used for validating token signatures. This is
-assumed to be done out-of-band.
+Issuers to exchange Token Keys used for validating token signatures or
+to configure the Issuer rate-limiting policy. This is assumed to be done
+out-of-band.
 
 # Conventions and Definitions
 
@@ -126,90 +139,91 @@ assumed to be done out-of-band.
 
 This document uses the same conventions for error handling as {{!DAP}}.
 In addition, this document extends the core specification by adding the
-following error types:
+following error type:
 
 | Type                  | Description                               |
 |:----------------------|:------------------------------------------|
 | unauthenticatedReport | An Aggregator has failed to validate the  |
-|                       | input share rate-limted token or no token |
-|                       | was provided                              |
+|                       | input share token or no token was         |
+|                       | provided                                  |
 
-The terms used follow those described in {{!DAP}} and {{!RLT}}. The
-following new terms are used:
+The terms used follow those described in {{!DAP}} and {{!PPARCH}}. In
+addition, the following terms are used throughout this document:
 
 Token:
-: The RSA Blind Signature Token as defined in {{!RLT}} included in
-upload report shares to prove that the client has been authenticated and
-rate-limited.
+: A Privacy Pass Token as defined in {{!PPARCH}} included in upload
+report shares to prove that the client has been authenticated and
+optionally rate-limited.
 
-# The RatedLimitedReport extension
+# The ReportAuth extension
 
 ## Overview
 
-The RateLimitedReport extension encapsulates a token allowing a Client
-to prove to Aggregators (Leader and Helpers) that it has been
-authenticated and rate-limited without revealing its identity when
-uploading a report. The token's lifecycle can be divided into three
-stages. First, the client follows the {{!RLT}} protocol to obtain a
-certain number of Aggregator-specific tokens.  Second, at the time of
-upload, the client includes the tokens into a RateLimitedReport
-extension for each Aggregator's input share. Third, the aggregators
-redeem the tokens, as part of their aggregation initialization.
-{{fig-interaction-overview}} shows an overview of the involved parties
-and their interactions.
+The ReportAuth extension encapsulates a token allowing a Client to prove
+to Aggregators (Leader and Helpers) that it has been authenticated and
+optionally rate-limited without revealing its identity when uploading a
+report. The token's lifecycle can be divided into three stages. First,
+the client follows the {{!PPISSUANCE}} protocol to obtain a certain number
+of Aggregator-specific tokens.  Second, at the time of upload, the
+client includes the tokens into a ReportAuth extension for each
+Aggregator's input share. Third, the aggregators redeem the tokens as
+outlined in {{!PPAUTHSCHEME}}, as part of their aggregation
+initialization.  {{fig-interaction-overview}} shows an overview of the
+involved parties and their interactions.
 
 ~~~
-+---------+    +-----------+     +---------+     +--------+       +--------+
-| Client  |    | Attester  |     | Issuer  |     | Leader |       | Helper |
-+---------+    +-----------+     +---------+     +--------+       +--------+
-     |               |                |              |                |
++---------+    +-----------+     +---------+     +--------+      +--------+
+| Client  |    | Attester  |     | Issuer  |     | Leader |      | Helper |
++---------+    +-----------+     +---------+     +--------+      +--------+
+     |               |                |              |               |
 <per Aggregator>
-[Challenge]--------->|                |              |                |
-     |      <authenticate Client>     |              |                |
-     |               |--[Challenge]-->|              |                |
-     |               |<----[Token]----|              |                |
-     |      <enforce rate limit>      |              |                |
-     |<----[Token]---|                |              |                |
-     |               |                |              |                |
-     |               |                |              |                |
+[Challenge]--------->|                |              |               |
+     |      <authenticate Client>     |              |               |
+     |               |--[Challenge]-->|              |               |
+     |               |<----[Token]----|              |               |
+     |     [<enforce rate limit>]     |              |               |
+     |<----[Token]---|                |              |               |
+     |               |                |              |               |
+     |               |                |              |               |
 <upon upload>
-     |        [payload + tokens             ]        |                |
-     |--------[within input share           ]------->|                |
-     |        [RatedLimitedReport extensions]        |                |
-     |               |                |  <validate Leader token>      |
-     |               |                |              |  [Helper    ]  |
-     |               |                |              |--[share with]->|
-     |               |                |              |  [RatedLimitedReport]
-     |               |                |              |  [extension ]  |
-     |               |                |              |         <validate token>
+     |            [payload + tokens      ]           |               |
+     |------------[within input share    ]---------->|               |
+     |            [Report Auth extensions]           |               |
+     |               |                |    <validate Leader token>   |
+     |               |                |              | [Helper    ]  |
+     |               |                |              |-[share with]->|
+     |               |                |              | [ReportAuth]  |
+     |               |                |              | [extension ]  |
+     |               |                |              |        <validate token>
 ~~~
 {: #fig-interaction-overview title="Interaction overview"}
 
 ## Extension definition
 
-The RatedLimitedReport extension contains two elements:
+The ReportAuth extension contains two elements:
 
-- A rate-limited token obtained from an Issuer of the {{!RLT}}
+- A Privacy Pass token obtained from an Issuer of the {{!PPARCH}}
   architecture. By checking the token's validity, an Aggregator can verify
-  the uploading client has been authenticated, and the payload is within a
-  rate limit configured in the Issuer.
-- The challenge originally used by the client to obtain the rate-limited
-  token. This is to allow the Aggregator to re-construct the context
-  necessary for the token validation. In the standard {{!RLT}}
-  architecture, the challenge is sent by the Origin, or Aggregator in the
-  case of DAP, to the Client. In this extension's use case, the challenge
-  is synthesized by the Client. This removes the requirement for the
-  initial challenge-response between the Client and the Aggregators.
+  the uploading client has been authenticated. In case rate-limited token
+  issuance as desciribed in {{!RATE-LIMITED}} is used, this also verifies
+  that the payload is within a rate limit configured in the Issuer.
+- The challenge originally used by the client to obtain the token. This
+  is to allow the Aggregator to reconstruct the context necessary for the
+  token validation. In the standard {{!PPARCH}} architecture, the challenge
+  is sent by the Origin, or Aggregator in the case of DAP, to the Client.
+  In this extension's use case, the challenge is synthesized by the
+  Client. This removes the requirement for the initial challenge-response
+  between the Client and the Aggregators.
 
 
-The RatedLimitedReport extension is structured as follows:
+The ReportAuth extension is structured as follows:
 
 ~~~
 struct {
     ExtensionType extension_type;
     Token token;
     Challenge challenge;
-} RatedLimitedReport;
+} ReportAuth;
 
 struct {
     uint16_t token_type;
@@ -217,14 +231,14 @@ struct {
     uint8_t challenge_digest[32];
     uint8_t token_key_id[Nid];
     uint8_t authenticator[Nk];
-} Token; // as defined in [RLT], Section 5.5.3
+} Token; // as defined in [PPAUTHSCHEME], Section 2.2
 
 struct {
     uint16_t token_type;
     opaque issuer_name<1..2^16-1>;
     opaque redemption_context<0..32>;
     opaque origin_info<0..2^16-1>;
-} Challenge; // as defined in [AUTHSCHEME], Section 2.1
+} Challenge; // as defined in [PPAUTHSCHEME], Section 2.1
 ~~~
 
 The RatedLimitedReport extension's field's values are as follows:
@@ -235,8 +249,7 @@ The RatedLimitedReport extension's field's values are as follows:
 +----------------+--------------------+-------------------------+------+
 | extension_type |                    | TBD                     | [1]  |
 +----------------+--------------------+-------------------------+------+
-| Token          | token_type         | 0x0003 (network byte    |      |
-|                |                    | order)                  | [1]  |
+| Token          | token_type         |                         | [2]  |
 +----------------+--------------------+-------------------------+------+
 |                | nonce              | See "Setting the        |      |
 |                |                    | report ID"              | [2]  |
@@ -253,7 +266,7 @@ The RatedLimitedReport extension's field's values are as follows:
 
 \[1\] See {{!DAP}}
 
-\[2\] See {{!RLT}}
+\[2\] See {{!PPAUTHSCHEME}}
 
 The challenge synthesis, token acquisition, and report creation are
 discussed in detail in the following section. The token redemption is
@@ -287,8 +300,8 @@ SHOULD be empty.
 ## Token acquisition {#token-acquisition}
 
 The Client includes the per-Aggregator challenge in token issuance
-requests to the {{!DAP}} infrastructure. The client MUST obtain a fixed
-number of tokens per Aggregator, at a time not associated with the
+requests to the {{!PPARCH}} infrastructure. The client MUST obtain a
+fixed number of tokens per Aggregator, at a time not associated with the
 {{!DAP}} upload. This can be at random times, or at fixed intervals, as
 long as the acquisition time cannot be linked to a specific {{!DAP}}
 upload. This disassociation is important to mitigate timing attacks. See
@@ -296,10 +309,10 @@ upload. This disassociation is important to mitigate timing attacks. See
 
 ## Report creation
 
-{{fig-RatedLimitedReport-extension}} shows an overview of the DAP report
-structure. This extension (RatedLimitedReport) is added to the upload
-extensions section of each Aggregator's input share in the upload
-report, as defined in {{!DAP, Section 4.3.3}}.
+{{fig-reportauth-extension}} shows an overview of the DAP report
+structure. This extension (ReportAuth) is added to the upload extensions
+section of each Aggregator's input share in the upload report, as
+defined in {{!DAP, Section 4.3.3}}.
 
 ~~~
 +----------------------------------------------------------+
@@ -320,16 +333,16 @@ report, as defined in {{!DAP, Section 4.3.3}}.
 |  +--+--+----------------------------------------+--+--+  |
 |  |  |  | Extensions                             |  |  |  |
 |  +--+--+--+----------------------------------+--+--+--+  |
-|  |  |  |  | RatedLimitedReport               |  |  |  |  |
+|  |  |  |  | ReportAuth                       |  |  |  |  |
 |  |  +--+--+----------------------------------+--+--+--+  |
 |  |  |  |  | ...                              |  |  |  |  |
 |  |  +--+--+----------------------------------+--+--+--+  |
 |  |  |  | Payload                                |  |  |  |
 +--+--+--+----------------------------------------+--+--+--+
 ~~~
-{: #fig-RatedLimitedReport-extension title="RatedLimitedReport extension within a DAP report"}
+{: #fig-reportauth-extension title="ReportAuth extension within a DAP report"}
 
-### Constructing the RatedLimitedReport extension
+### Constructing the ReportAuth extension
 
 At the time of upload, the Client selects tokens for each of the
 Aggregators. The Client MUST NOT reuse a token previously used for the
@@ -338,19 +351,18 @@ If the client has no unused token left or the client has not obtained
 tokens for a participating Aggregator, it MUST abort the upload.
 
 The client uses the allocated token, and the token's
-challenge, to construct the RatedLimitedReport extension and include it
+challenge, to construct the ReportAuth extension and include it
 in the PlaintextInputShare, as specified in {{!DAP, Section 4.3.2}}. The
 process is repeated for each Aggregator's input share.
 
 ### Setting the report ID {#setting-report-id}
 
-As per {{!AUTHSCHEME=I-D.ietf-privacypass-auth-scheme, Section 2.2}},
-the token nonce is a randomly-generated 32-byte value. The client MUST
-re-use the lower 16 bytes of the nonce of the token embedded in the
-RatedLimitedReport extension as the {{!DAP}} report's ID. This allows
-Aggregators to make sure each token is only used once per task, by
-leveraging the anti-reply mechanism specified in {{!DAP, Section 4.3.2
-and Section 4.4.1.4}} step 6.
+As per {{!PPAUTHSCHEME, Section 2.2}}, the token nonce is a
+randomly-generated 32-byte value. The client MUST re-use the lower 16
+bytes of the nonce of the token embedded in the ReportAuth extension as
+the {{!DAP}} report's ID. This allows Aggregators to make sure each
+token is only used once per task, by leveraging the anti-reply mechanism
+specified in {{!DAP, Section 4.3.2 and Section 4.4.1.4}} step 6.
 
 # Aggregator behavior {#aggregator-behavior}
 
@@ -367,9 +379,8 @@ Specifically, both the Leader and Helpers MUST perform the following:
   their respective ReportShare.
 - Validate the origin_info field of the challenge contains the
   aggregator's hostname.
-- Validate the token, as per {{!ISSUANCE=I-D.ietf-privacypass-protocol,
-  Section 6.4}}. This includes verifying the token is issued with an
-active Issuer Token Key.
+- Validate the token, as per {{!PPISSUANCE, Section 6.4}}. This includes
+  verifying the token is issued with an active Issuer Token Key.
 - Validate `token.nonce[16...31] == report.metadata.report_id`. See
   {{setting-report-id}}.
 
@@ -383,12 +394,14 @@ verify and keep track of the full token nonce.
 
 ## Threat model
 
-The Privacy Pass Rate Limit Tokens specification assumes that Attester,
-Issuer, and Origin are run by distinct parties and that there is no
-collusion between them. It is important to point out that the threat
-model for this extension deviates from that assumption in that it is
-assumed that Attester and a subset of Aggregators, and Issuer and a
-subset of Aggregators might be run by the same entity.
+{{!PPARCH, Section 4}} defines different deployment models in which
+Attester, Issuer, and Origin can be run by the same or by different
+parties. The threat model for this extensions assume that at least
+Attester and Issuer are run by different parties to avoid
+de-anonymization attacks in which unique Issuer Token Keys could be used
+to sign tokens for a targeted client. However, this threat model assumes
+that the Attester and a subset of Aggregators, and Issuer and a subset
+of Aggregators might be run by the same entity.
 
 No single party should be able to associate the identity of a client
 with a specific upload report nor learn which measurement task a given
@@ -412,7 +425,7 @@ token issuance requests.
 ## Challenge synthesis
 
 It is assumed that challenges are synthesized by the client with an
-empty redemption_context.  However, adopters MAY require clients to
+empty redemption_context. However, adopters MAY require clients to
 obtain challenges from Aggregators directly. In this case, the timing
 and frequency considerations above equally apply to challenge requests.
 Furthermore, clients MUST ensure that they don't reveal their identity
@@ -422,10 +435,11 @@ malicious Aggregator might issue a challenge with a unique
 redemption_context that would allow it to associate upload reports with
 client identities at token redemption time.
 
-## Token Key and Issuer Origin Secret rotation {#issuer-key-rotation}
+## Token Key and Issuer Origin Secret rotation with rate-limited tokens {#issuer-key-rotation}
 
-Issuers MUST periodically rotate the per-Origin Token Key and Issuer
-Origin Secret values as described in {{!RLT, Section 10.1}} to prevent
+In case the {{!RATE-LIMITED}} issuance protocol is used, Issuers MUST
+periodically rotate the per-Origin Token Key and Issuer Origin Secret
+values as described in {{!RATE-LIMITED, Section 10.1}} to prevent
 malicious clients from hoarding tokens across Issuer policy windows in
 order to bypass rate limiting. While Aggregators must accommodate for
 this key rotation and SHOULD accept tokens signed with the private key
@@ -435,7 +449,12 @@ limit the time window during which such tokens are accepted.
 ## Compromised parties and collusion
 
 This section discusses the implications of compromise of the parties
-involved in the protocol as well as collusion between them.
+involved in the protocol as well as collusion between them. Note that
+these considerations differ significantly depending on whether
+authenticated clients are assumed to be trusted or not. In the case
+authenticated clients are assumed to potentially act maliciously, it is
+assumed a rate-limiting issuance protocol as described in
+{{!RATE-LIMITED}} is used.
 
 ### Malicious Client
 
@@ -443,7 +462,7 @@ A malicious Client may attempt to generate and upload a large number of
 reports to skew aggregation results in order to reveal information about
 honest measurements (privacy violation), or to influence results to
 their benefit ("stats poisoning"). However, as Aggregators reject input
-shares without rate-limited tokens, with tokens that have already been
+shares without authentication tokens, with tokens that have already been
 redeemed for the same task, or with tokens that are otherwise invalid,
 Clients are limited to a number of reports within the rate limit
 configured at the Issuer. The rate limit should be configured so that
@@ -456,11 +475,12 @@ Issuer Origin Secret rotation discussed in {{issuer-key-rotation}}.
 
 ### Malicious Attester
 
-A malicious Attester can choose not to enforce rate limits and allow
-(selected) malicious Clients to contribute an arbitrary number of
-reports to one or more collections. This could lead to stats poisoning
-(within the limits enforced by the VDAF). However, a malicious Attester
-alone is not able to learn which task a given client is contributing to.
+A malicious Attester can choose not to authenticate clients or enforce
+rate limits and allow (selected) malicious Clients to contribute an
+arbitrary number of reports to one or more collections. This could lead
+to stats poisoning (within the limits enforced by the VDAF). However, a
+malicious Attester alone is not able to learn which task a given client
+is contributing to.
 
 ### Malicious Issuer
 
@@ -473,19 +493,11 @@ learns the identities of clients.
 ### Malicious Aggregator
 
 A malicious Aggregator, e.g. Leader, could decide not to authenticate by
-validating the RateLimitedReport token in upload reports. However, the
+validating the ReportAuth token in upload reports. However, the
 corresponding upload shares of the other Aggregators sent by a malicious
-colluding client would fail validation. A malicious Leader could
-decide to inject additional reports but Helper shares would fail
-validation without valid rate-limited tokens.
-
-### Collusion between Attester and Issuer
-
-In this proposal, the Aggregator host names are not secret and therefore
-it is not vital to prevent the Issuer from revealing Origins to the
-Attester. The risk is as high as with a malicious Attester or a
-malicious Issuer alone, allowing for either to bypass rate-limting and
-issue an unlimited number of tokens to the same client.
+colluding client would fail validation. A malicious Leader could decide
+to inject additional reports but Helper shares would fail validation
+without valid rate-limited tokens.
 
 ### Collusion between Attester and Leader
 
@@ -503,10 +515,10 @@ upload reports from a specific client:
 
 - Clients communicate with the Leader in a privacy-preserving fashion,
   e.g. via Oblivious HTTP {{!OHTTP}}, so the Leader cannot identify the
-origin of a report itself
+  origin of a report itself
 - Tokens issued by the Issuer to a specific client are encrypted in the
   TokenResponse (see {{!DAP, Section 6}}) so that the Attester and a
-colluding Leader cannot correlate client identities with tokens.
+  colluding Leader cannot correlate client identities with tokens.
 
 ### Collusion between Issuer and Helper
 
