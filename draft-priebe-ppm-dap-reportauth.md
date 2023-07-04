@@ -172,29 +172,29 @@ initialization.  {{fig-interaction-overview}} shows an overview of the
 involved parties and their interactions.
 
 ~~~
-+---------+    +-----------+     +---------+     +--------+      +--------+
-| Client  |    | Attester  |     | Issuer  |     | Leader |      | Helper |
-+---------+    +-----------+     +---------+     +--------+      +--------+
-     |               |                |              |               |
++---------+   +-----------+    +---------+    +--------+      +--------+
+| Client  |   | Attester  |    | Issuer  |    | Leader |      | Helper |
++---------+   +-----------+    +---------+    +--------+      +--------+
+     |              |               |             |               |
 <per Aggregator>
-[Challenge]--------->|                |              |               |
-     |      <authenticate Client>     |              |               |
-     |               |--[Challenge]-->|              |               |
-     |               |<----[Token]----|              |               |
-     |     [<enforce rate limit>]     |              |               |
-     |<----[Token]---|                |              |               |
-     |               |                |              |               |
-     |               |                |              |               |
+[Challenge]-------->|               |             |               |
+     |     <authenticate Client>    |             |               |
+     |              |--[Challenge]->|             |               |
+     |              |<----[Token]---|             |               |
+     |    [<enforce rate limit>]    |             |               |
+     |<---[Token]---|               |             |               |
+     |              |               |             |               |
+     |              |               |             |               |
 <upon upload>
-     |            [payload + tokens      ]           |               |
-     |------------[within input share    ]---------->|               |
-     |            [Report Auth extensions]           |               |
-     |               |                |    <validate Leader token>   |
-     |               |                |              | [Helper    ]  |
-     |               |                |              |-[share with]->|
-     |               |                |              | [ReportAuth]  |
-     |               |                |              | [extension ]  |
-     |               |                |              |        <validate token>
+     |          [payload + tokens      ]          |               |
+     |----------[within input share    ]--------->|               |
+     |          [Report Auth extensions]          |               |
+     |              |               |    <validate Leader token>  |
+     |              |               |             | [Helper    ]  |
+     |              |               |             |-[share with]->|
+     |              |               |             | [ReportAuth]  |
+     |              |               |             | [extension ]  |
+     |              |               |             |     <validate token>
 ~~~
 {: #fig-interaction-overview title="Interaction overview"}
 
