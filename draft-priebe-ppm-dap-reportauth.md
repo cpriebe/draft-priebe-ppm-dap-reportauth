@@ -19,7 +19,7 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "Anonymous report authentication for PPM DAP"
+title: "Report authentication for PPM DAP"
 category: info
 
 docname: draft-priebe-ppm-dap-reportauth-latest
@@ -101,10 +101,10 @@ extension that leverages Privacy Pass tokens to mitigate the Sybil
 attack risk in {{!DAP}} uploads. For this, Clients request a fixed
 number of tokens for each Aggregator it sends report shares to within
 each token issuance window. Token issuance follows the process outlined
-in {{!PPISSUANCE=I-D.ietf-privacypass-protocol}}. As part of this process,
-the Client is authenticated by the Attester. When a Client contributes
-to a measurement task, it adds a token for each Aggregator to the
-corresponding encrypted input share within the report.
+in {{!PPISSUANCE=I-D.ietf-privacypass-protocol}}. As part of this
+process, the Client is authenticated by the Attester. When a Client
+contributes to a measurement task, it adds a token for each Aggregator
+to the corresponding encrypted input share within the report.
 
 Rate-Limited Privacy Pass tokens
 {{!RATE-LIMITED=I-D.draft-ietf-privacypass-rate-limit-tokens-01}}
@@ -114,7 +114,7 @@ Attester according to the policy defined by the Issuer which issues
 tokens as defined in {{!PPARCH}}. While it is RECOMMENDED to use
 rate-limited tokens to prevent authenticated Clients from launching
 Sybil attacks, the DAP extension described in this document is
-compatible with any type of Privacy Pass token. Non-rate-limited tokens
+compatible with any type of Privacy Pass tokens. Non-rate-limited tokens
 can be sufficient if authenticated clients are assumed to not launch
 Sybil attacks.
 
@@ -147,7 +147,7 @@ following error type:
 |                       | input share token or no token was         |
 |                       | provided                                  |
 
-The terms used follow those described in {{!DAP}} and {{!PPARCH}}. In
+The terms used follow the definitions in {{!DAP}} and {{!PPARCH}}. In
 addition, the following terms are used throughout this document:
 
 Token:
@@ -163,9 +163,9 @@ The ReportAuth extension encapsulates a token allowing a Client to prove
 to Aggregators (Leader and Helpers) that it has been authenticated and
 optionally rate-limited without revealing its identity when uploading a
 report. The token's lifecycle can be divided into three stages. First,
-the client follows the {{!PPISSUANCE}} protocol to obtain a certain number
-of Aggregator-specific tokens.  Second, at the time of upload, the
-client includes the tokens into a ReportAuth extension for each
+the client follows the {{!PPISSUANCE}} protocol to obtain a certain
+number of Aggregator-specific tokens.  Second, at the time of upload,
+the client includes the tokens in ReportAuth extensions within each
 Aggregator's input share. Third, the aggregators redeem the tokens as
 outlined in {{!PPAUTHSCHEME}}, as part of their aggregation
 initialization.  {{fig-interaction-overview}} shows an overview of the
@@ -505,10 +505,9 @@ It is important to prevent the Leader from identifying individual
 clients to avoid de-anonymization attacks in which the Leader isolates
 an upload report from a victim and injects reports with zero'd vectors.
 The Helper is meant to prevent such malicious Leader injections by
-validating the rate-limiting token included in the Helper share.
-However, since the Leader and Attester collude, it is possible for the
-Leader to obtain an arbitrary number of valid Helper tokens to mount
-such an attack.
+validating the token included in the Helper share. However, since the
+Leader and Attester collude, it is possible for the Leader to obtain an
+arbitrary number of valid Helper tokens to mount such an attack.
 
 There are two mitigations to prevent the Leader from identifying
 upload reports from a specific client:
