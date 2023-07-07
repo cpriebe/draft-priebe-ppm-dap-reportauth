@@ -220,7 +220,6 @@ The ReportAuth extension is structured as follows:
 
 ~~~
 struct {
-    ExtensionType extension_type;
     Token token;
     Challenge challenge;
 } ReportAuth;
@@ -247,26 +246,23 @@ The ReportAuth extension's fields' values are as follows:
 +----------------+--------------------+-------------------------+------+
 | field          | subfield           | Value                   | Note |
 +----------------+--------------------+-------------------------+------+
-| extension_type |                    | TBD                     | [1]  |
 +----------------+--------------------+-------------------------+------+
-| Token          | token_type         |                         | [2]  |
+| Token          | token_type         |                         | [1]  |
 +----------------+--------------------+-------------------------+------+
 |                | nonce              | See "Setting the        |      |
-|                |                    | report ID"              | [2]  |
+|                |                    | report ID"              | [1]  |
 +----------------+--------------------+-------------------------+------+
-|                | challenge_digest   |                         | [2]  |
+|                | challenge_digest   |                         | [1]  |
 +----------------+--------------------+-------------------------+------+
-|                | token_key_id       |                         | [2]  |
+|                | token_key_id       |                         | [1]  |
 +----------------+--------------------+-------------------------+------+
-|                | authenticator      |                         | [2]  |
+|                | authenticator      |                         | [1]  |
 +----------------+--------------------+-------------------------+------+
 | Challenge      |...                 | See "Token Aquisition"  |      |
 +----------------+--------------------+-------------------------+------+
 ~~~
 
-\[1\] See {{!DAP}}
-
-\[2\] See {{!PPAUTHSCHEME}}
+\[1\] See {{!PPAUTHSCHEME}}
 
 The challenge synthesis, token acquisition, and report creation are
 discussed in detail in the following section. The token redemption is
@@ -315,32 +311,39 @@ section of each Aggregator's input share in the upload report, as
 defined in {{!DAP, Section 4.3.3}}.
 
 ~~~
-+----------------------------------------------------------+
-| Report                                                   |
-+--+----------------------------------------------------+--+
-|  | ReportMetadata                                     |  |
-|  +--+----------------------------------------------+--+  |
-|  |  | report_id                                    |  |  |
-|  |  +----------------------------------------------+  |  |
-|  |  | ...                                          |  |  |
-|  +--+----------------------------------------------+--+  |
-|  | PublicShare                                        |  |
-|  +----------------------------------------------------+  |
-|  | HpkeCiphertext (encrypted_input_share)             |  |
-|  |(per aggregator)                                    |  |
-|  +--+----------------------------------------------+--+  |
-|  |  | PlainTextInputShare                          |  |  |
-|  +--+--+----------------------------------------+--+--+  |
-|  |  |  | Extensions                             |  |  |  |
-|  +--+--+--+----------------------------------+--+--+--+  |
-|  |  |  |  | ReportAuth                       |  |  |  |  |
-|  |  +--+--+----------------------------------+--+--+--+  |
-|  |  |  |  | ...                              |  |  |  |  |
-|  |  +--+--+----------------------------------+--+--+--+  |
-|  |  |  | Payload                                |  |  |  |
-+--+--+--+----------------------------------------+--+--+--+
++-----------------------------------------------------------+
+| Report                                                    |
++--+-----------------------------------------------------+--+
+|  | ReportMetadata                                      |  |
+|  +--+-----------------------------------------------+--+  |
+|  |  | report_id                                     |  |  |
+|  |  +-----------------------------------------------+  |  |
+|  |  | ...                                           |  |  |
+|  +--+-----------------------------------------------+--+  |
+|  | PublicShare                                         |  |
+|  +-----------------------------------------------------+  |
+|  | HpkeCiphertext (encrypted_input_share)              |  |
+|  |(per aggregator)                                     |  |
+|  +--+-----------------------------------------------+--+  |
+|  |  | PlainTextInputShare                           |  |  |
+|  +--+--+-----------------------------------------+--+--+  |
+|  |  |  | Extensions                              |  |  |  |
+|  +--+--+--+-----------------------------------+--+--+--+  |
+|  |  |  |  | Extension                         |  |  |  |  |
+|  |  +--+--+--+-----------------------------+--+--+--+--+  |
+|  |  |  |  |  | extension_type = ReportAuth |  |  |  |  |  |
+|  |  +--+--+--+-----------------------------+--+--+--+--+  |
+|  |  |  |  |  | ReportAuth extension        |  |  |  |  |  |
+|  |  +--+--+--+-----------------------------+--+--+--+--+  |
+|  |  |  |  | ...                               |  |  |  |  |
+|  |  +--+--+-----------------------------------+--+--+--+  |
+|  |  |  | Payload                                 |  |  |  |
++--+--+--+-----------------------------------------+--+--+--+
 ~~~
 {: #fig-reportauth-extension title="ReportAuth extension within a DAP report"}
+
+Note that there is currently no defined extension type for this
+extension yet, see {{iana-considerations}}.
 
 ### Constructing the ReportAuth extension
 
@@ -527,7 +530,7 @@ issued or redeemed for so that targeted attacks aren't possible by
 either or both of them. The risks should be equivalent to those of a
 compromised Issuer.
 
-# IANA Considerations
+# IANA Considerations {#iana-considerations}
 
 > TODO: Assign extension type identifier
 
