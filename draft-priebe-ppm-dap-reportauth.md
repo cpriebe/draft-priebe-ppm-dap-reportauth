@@ -88,7 +88,7 @@ However, authentication and effective rate limiting requires associating
 an upload with a client identity, and thus defeats the purpose of
 {{!DAP}}.
 
-Private Pass tokens as defined in {{!PPARCH}} offer a framework to solve
+Privacy Pass tokens as defined in {{!PPARCH}} offer a framework to solve
 this dilemma. In this protocol, a client can go through a token issuance
 process to generate unlinkable one-time use authentication tokens. By
 presenting the token to a service provider (i.e. the Origin, as defined
@@ -205,7 +205,7 @@ The ReportAuth extension contains two elements:
 - A Privacy Pass token obtained from an Issuer of the {{!PPARCH}}
   architecture. By checking the token's validity, an Aggregator can verify
   the uploading client has been authenticated. In case rate-limited token
-  issuance as desciribed in {{!RATE-LIMITED}} is used, this also verifies
+  issuance as described in {{!RATE-LIMITED}} is used, this also verifies
   that the payload is within a rate limit configured in the Issuer.
 - The challenge originally used by the client to obtain the token. This
   is to allow the Aggregator to reconstruct the context necessary for the
@@ -241,7 +241,7 @@ struct {
 } Challenge; // as defined in [PPAUTHSCHEME], Section 2.1
 ~~~
 
-The RatedLimitedReport extension's field's values are as follows:
+The ReportAuth extension's fields' values are as follows:
 
 ~~~
 +----------------+--------------------+-------------------------+------+
@@ -396,7 +396,7 @@ verify and keep track of the full token nonce.
 
 {{!PPARCH, Section 4}} defines different deployment models in which
 Attester, Issuer, and Origin can be run by the same or by different
-parties. The threat model for this extensions assume that at least
+parties. The threat model for this extension assumes that at least
 Attester and Issuer are run by different parties to avoid
 de-anonymization attacks in which unique Issuer Token Keys could be used
 to sign tokens for a targeted client. However, this threat model assumes
@@ -404,7 +404,7 @@ that the Attester and a subset of Aggregators, and Issuer and a subset
 of Aggregators might be run by the same entity.
 
 No single party should be able to associate the identity of a client
-with a specific upload report nor learn which measurement task a given
+with a specific uploaded report nor learn which measurement task a given
 client is contributing to.
 
 ## Timing and frequency of token issuance requests {#timing-token-issuance}
@@ -418,7 +418,7 @@ based on the timing of the token issuance request.
 Equally, the frequency and number of token issuance requests MUST be
 independent of token redemption and the timing of instructions for task
 contributions. Clients MUST request tokens with a fixed frequency, e.g.
-a fixed number of tokens each day. This is to avoid an Attester from
+a fixed number of tokens each day. This is to prevent an Attester from
 inferring which task a client has contributed to based on the number of
 token issuance requests.
 
