@@ -364,12 +364,20 @@ process is repeated for each Aggregator's input share.
 
 ### Setting the report ID {#setting-report-id}
 
+As per {{!DAP, Section 4.3.2}} The report ID MUST be generated using a
+cryptographically secure random number generator.
+
 As per {{!PPAUTHSCHEME, Section 2.2}}, the token nonce is a
-randomly-generated 32-byte value. The client MUST re-use the lower 16
-bytes of the nonce of the token embedded in the ReportAuth extension as
-the {{!DAP}} report's ID. This allows Aggregators to make sure each
-token is only used once per task, by leveraging the anti-reply mechanism
-specified in {{!DAP, Section 4.3.2 and Section 4.4.1.4}} step 6.
+randomly-generated 32-byte value. As an optimisation, a DAP deployment
+MAY require clients to re-use the lower 16 bytes of the nonce of the
+token embedded in the ReportAuth extension as the {{!DAP}} report's ID.
+This allows Aggregators to make sure each token is only used once per
+task by verifying that token nonce and report ID are the same and
+leveraging the anti-reply mechanism specified in {{!DAP, Section 4.3.2
+and Section 4.4.1.4}} step 6.
+
+Note that in this case clients MUST manage token sets containing one
+token per Aggregator with a shared nonce.
 
 # Aggregator behavior {#aggregator-behavior}
 
@@ -386,10 +394,15 @@ Specifically, both the Leader and Helpers MUST perform the following:
   their respective ReportShare.
 - Validate the origin_info field of the challenge contains the
   aggregator's hostname.
-- Validate the token, as per {{!PPISSUANCE, Section 6.4}}. This includes
-  verifying the token is issued with an active Issuer Token Key.
-- Validate `token.nonce[16...31] == report.metadata.report_id`. See
-  {{setting-report-id}}.
+- Validate the token, as per {{!PPISSUANCE, Section 6.4}}. This
+  includes verifying the token is issued with an active Issuer Token
+  Key.
+- Validate that the token has not previously been used for the current
+  task to mitigate against replay attacks. If clients have been
+  instructed to reuse token nonces as report IDs (see
+  {{setting-report-id}}), this can be achieved by validating
+  `token.nonce[16...31] == report.metadata.report_id`. Otherwise, token
+  nonce reuse MUST be tracked independently of report ID reuse.
 
 If any of the above steps fails, the aggregator MUST reject the report
 share with an "unauthenticatedReport" error. Note that the binding of
