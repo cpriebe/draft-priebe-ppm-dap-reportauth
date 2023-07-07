@@ -147,6 +147,10 @@ following error type:
 |                       | input share token or no token was         |
 |                       | provided                                  |
 
+> TODO: This should be a new PrepareError variant, rather than a new
+> error type URI, see
+> https://github.com/cpriebe/draft-priebe-ppm-dap-reportauth/issues/8
+
 The terms used follow the definitions in {{!DAP}} and {{!PPARCH}}. In
 addition, the following terms are used throughout this document:
 
