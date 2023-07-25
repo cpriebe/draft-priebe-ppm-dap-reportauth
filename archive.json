@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-07-09T01:47:48.337135+00:00",
+  "timestamp": "2023-07-25T01:26:03.449667+00:00",
   "repo": "cpriebe/draft-priebe-ppm-dap-reportauth",
   "labels": [
     {
@@ -107,15 +107,15 @@
       "id": "I_kwDOJsOeD85oNf77",
       "title": "Chris P: Threat model question",
       "url": "https://github.com/cpriebe/draft-priebe-ppm-dap-reportauth/issues/2",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "> It is important to point out that the threat\r\nmodel for this extension deviates from that assumption in that it is\r\nassumed that Attester and a subset of Aggregators, and Issuer and a\r\nsubset of Aggregators might be run by the same entity.\r\n\r\nAs a defense against Sybil attacks, isn't it required that the Issuer is non-colluding with both Aggregators? If, say, the Helper runs the Issuer, can't it do a Sybil attack?",
       "createdAt": "2023-06-08T17:36:50Z",
-      "updatedAt": "2023-06-14T21:39:48Z",
-      "closedAt": null,
+      "updatedAt": "2023-07-24T23:53:10Z",
+      "closedAt": "2023-07-24T23:53:10Z",
       "comments": [
         {
           "author": "cpriebe",
@@ -346,6 +346,22 @@
           "updatedAt": "2023-07-07T10:49:12Z"
         }
       ]
+    },
+    {
+      "number": 15,
+      "id": "I_kwDOJsOeD85sT3Ex",
+      "title": "Minor issue in Introduction section",
+      "url": "https://github.com/cpriebe/draft-priebe-ppm-dap-reportauth/issues/15",
+      "state": "OPEN",
+      "author": "linmao-song",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We need to rephrase the following part : it should be the `Issuer` that the service provider trusts.\r\n```\r\na client can prove to have been authenticated by an\r\nAttester that the service provider trusts, without revealing its\r\nidentity to the latter.\r\n```\r\n\r\nhttps://github.com/cpriebe/draft-priebe-ppm-dap-reportauth/blob/cd26281b8c385f5b8c77eba470bec2ba99c4329e/draft-priebe-ppm-dap-reportauth.md?plain=1#L96C10-L96C42\r\n\r\nQuoting https://datatracker.ietf.org/doc/draft-ietf-privacypass-architecture/\r\n```\r\nThe privacy goals of Privacy Pass assume a threat model in which\r\n   Origins trust specific Issuers to produce tokens, and Issuers in turn\r\n   trust one or more Attesters\r\n```\r\n",
+      "createdAt": "2023-07-23T14:16:27Z",
+      "updatedAt": "2023-07-23T14:16:27Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
