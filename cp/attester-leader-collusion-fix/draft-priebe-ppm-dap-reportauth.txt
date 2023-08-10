@@ -567,7 +567,7 @@ Table of Contents
    malicious Leader could decide to inject additional reports but Helper
    shares would fail validation without valid rate-limited tokens.
 
-   [TODO: Address the impact of Leaders dropping reports]
+      TODO: Address the impact of Leaders dropping reports
 
 6.5.5.  Collusion between Attester and Leader
 
