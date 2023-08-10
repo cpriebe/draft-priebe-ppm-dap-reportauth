@@ -524,6 +524,8 @@ colluding client would fail validation. A malicious Leader could decide
 to inject additional reports but Helper shares would fail validation
 without valid rate-limited tokens.
 
+> TODO: Address the impact of Leaders dropping reports
+
 ### Collusion between Attester and Leader
 
 It is important to prevent the Leader from identifying individual
@@ -534,15 +536,10 @@ validating the token included in the Helper share. However, since the
 Leader and Attester collude, it is possible for the Leader to obtain an
 arbitrary number of valid Helper tokens to mount such an attack.
 
-There are two mitigations to prevent the Leader from identifying
-upload reports from a specific client:
-
-- Clients communicate with the Leader in a privacy-preserving fashion,
-  e.g. via Oblivious HTTP {{!OHTTP}}, so the Leader cannot identify the
-  origin of a report itself
-- Tokens issued by the Issuer to a specific client are encrypted in the
-  TokenResponse (see {{!DAP, Section 6}}) so that the Attester and a
-  colluding Leader cannot correlate client identities with tokens.
+To prevent the Leader from targeting individual Clients it is therefore
+required that Clients communicate with the Leader in a
+privacy-preserving fashion, e.g. via Oblivious HTTP {{!OHTTP}}, so the
+Leader cannot identify the origin of a report itself.
 
 ### Collusion between Issuer and Helper
 
