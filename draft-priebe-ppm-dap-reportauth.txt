@@ -5,7 +5,7 @@
 Privacy Preserving Measurement                                 C. Priebe
 Internet-Draft                                                   L. Song
 Intended status: Informational                                Apple Inc.
-Expires: 8 January 2024                                      7 July 2023
+Expires: 11 February 2024                                 10 August 2023
 
 
                    Report authentication for PPM DAP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 January 2024.
+   This Internet-Draft will expire on 11 February 2024.
 
 Copyright Notice
 
@@ -567,6 +567,8 @@ Table of Contents
    malicious Leader could decide to inject additional reports but Helper
    shares would fail validation without valid rate-limited tokens.
 
+      TODO: Address the impact of Leaders dropping reports
+
 6.5.5.  Collusion between Attester and Leader
 
    It is important to prevent the Leader from identifying individual
@@ -578,16 +580,10 @@ Table of Contents
    the Leader to obtain an arbitrary number of valid Helper tokens to
    mount such an attack.
 
-   There are two mitigations to prevent the Leader from identifying
-   upload reports from a specific client:
-
-   *  Clients communicate with the Leader in a privacy-preserving
-      fashion, e.g. via Oblivious HTTP [OHTTP], so the Leader cannot
-      identify the origin of a report itself
-
-   *  Tokens issued by the Issuer to a specific client are encrypted in
-      the TokenResponse (see [DAP], Section 6) so that the Attester and
-      a colluding Leader cannot correlate client identities with tokens.
+   To prevent the Leader from targeting individual Clients it is
+   therefore required that Clients communicate with the Leader in a
+   privacy-preserving fashion, e.g. via Oblivious HTTP [OHTTP], so the
+   Leader cannot identify the origin of a report itself.
 
 6.5.6.  Collusion between Issuer and Helper
 
@@ -624,9 +620,9 @@ Table of Contents
    [PPAUTHSCHEME]
               Pauly, T., Valdez, S., and C. A. Wood, "The Privacy Pass
               HTTP Authentication Scheme", Work in Progress, Internet-
-              Draft, draft-ietf-privacypass-auth-scheme-11, 23 June
+              Draft, draft-ietf-privacypass-auth-scheme-12, 9 August
               2023, <https://datatracker.ietf.org/doc/html/draft-ietf-
-              privacypass-auth-scheme-11>.
+              privacypass-auth-scheme-12>.
 
    [PPISSUANCE]
               Celi, S., Davidson, A., Valdez, S., and C. A. Wood,
