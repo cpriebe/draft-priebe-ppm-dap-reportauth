@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-07-25T01:26:03.449667+00:00",
+  "timestamp": "2023-08-13T01:03:59.331298+00:00",
   "repo": "cpriebe/draft-priebe-ppm-dap-reportauth",
   "labels": [
     {
@@ -551,6 +551,34 @@
       "mergedBy": "cpriebe",
       "mergeCommit": {
         "oid": "cd26281b8c385f5b8c77eba470bec2ba99c4329e"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOJsOeD85XnMso",
+      "title": "Remove note on encrypted TokenResponse from Attester-Leader collusion section",
+      "url": "https://github.com/cpriebe/draft-priebe-ppm-dap-reportauth/pull/16",
+      "state": "MERGED",
+      "author": "cpriebe",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "There is no encryption of the TokenResponse required to protect Attesters from observing the token as it's blinded and unblinding only happens on the client side.\r\n\r\nAlso adding a TODO on addressing the ability of Leaders to drop reports.",
+      "createdAt": "2023-08-10T08:29:38Z",
+      "updatedAt": "2023-08-10T08:31:22Z",
+      "baseRepository": "cpriebe/draft-priebe-ppm-dap-reportauth",
+      "baseRefName": "main",
+      "baseRefOid": "cd26281b8c385f5b8c77eba470bec2ba99c4329e",
+      "headRepository": "cpriebe/draft-priebe-ppm-dap-reportauth",
+      "headRefName": "cp/attester-leader-collusion-fix",
+      "headRefOid": "5c464a349bb47ce26c218e4f81368da47f5fa64a",
+      "closedAt": "2023-08-10T08:31:22Z",
+      "mergedAt": "2023-08-10T08:31:22Z",
+      "mergedBy": "cpriebe",
+      "mergeCommit": {
+        "oid": "d062ee387b67704311dcf83b2212e8db1bd365d0"
       },
       "comments": [],
       "reviews": []
